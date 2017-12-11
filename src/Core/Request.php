@@ -14,12 +14,35 @@ class Request extends BaseRequest
 
     protected function getContentType()
     {
-        return 'application/json';
+        if ($this->charset == '') {
+            return 'text/xml';
+        } else {
+            return 'text/xml; charset=' . strtolower($this->charset);
+        }
     }
 
     public function getHTTPBody()
     {
-        /// @todo
+        if ($this->charset == '') {
+            $body = '<?xml version="1.0" encoding="' . strtolower($this->charset) . " ?" . ">\n";
+        } else {
+            $body = '<?xml version="1.0" ?' . ">\n";
+        }
+        $body .= "<methodCall>\n<methodName>\n";
+
+        /// @todo finish...
+
+        $body .= $this->charsetConverter->encodeEntities($this->methodName, '...', $this->charset);
+
+        $body .= "</methodName>\n<params>\n";
+
+        foreach($this->params as $param) {
+            $body .= "<param>" . '...' . "</param>\n";
+        }
+
+        $body .= "</params>\n</methodCall>";
+
+        return $body;
     }
 
     /**
